@@ -85,7 +85,7 @@ export default function Preloader({ children }: { children: ReactNode }) {
                         {letters.map((letter, index) => (
                             <motion.span
                                 key={index}
-                                className="text-4xl md:text-6xl lg:text-7xl font-bold text-white"
+                                className="text-3xl md:text-6xl lg:text-7xl font-bold text-white"
                                 variants={letterVariants}
                                 style={{
                                     fontFamily: "system-ui, -apple-system, sans-serif",
