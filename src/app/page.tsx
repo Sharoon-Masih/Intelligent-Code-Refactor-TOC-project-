@@ -8,7 +8,8 @@ import { Issue } from "@/utils/dfa";
 
 interface analysisResponse {
   issues: Issue[],
-  token: string[]
+  token: string[],
+  message:string
 }
 export default function Home() {
   const [code, setCode] = useState("// Write your code here");
@@ -71,7 +72,7 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
           className="flex-grow bg-neutral-200 flex flex-col">
-          <ResultBox Output={res?.issues} />
+          <ResultBox output={res?.issues} msg={res?.message}/>
         </motion.div>
       </motion.div>
     </main>
