@@ -28,6 +28,7 @@ export default function Home() {
       setClicked(false)
     }
     const data: analysisResponse = await res.json()
+    console.log(data.token)
     return data
   }
   return (
