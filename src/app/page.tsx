@@ -11,9 +11,6 @@ interface analysisResponse {
   token: string[],
   message: string
 }
-interface refactoredResponse {
-  refactored: string
-}
 
 export default function Home() {
   const [code, setCode] = useState("// Write your code here");
@@ -38,13 +35,13 @@ export default function Home() {
         "Content-Type": "application/json"
       }
     });
-    let refactorCode = await refactorRes.json()
+    const refactorCode = await refactorRes.json()
 
     if (analyzerRes && refactorRes) {
       setClicked(false)
     }
 
-    let response = {
+    const response = {
       data,
       "refactored": refactorCode?.refactored ?? ''
     }

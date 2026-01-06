@@ -2,15 +2,15 @@ import { Issue } from '@/utils/dfa'
 import React, { useState } from 'react'
 
 const ResultBox = ({ output, msg, refactorCode }: { output: Issue[] | undefined, msg?: string, refactorCode: string | undefined }) => {
-    const [isCopied, setIscopied] = useState(false)
-    async function copy(content: any) {
-        try {
-            await navigator.clipboard.writeText(content)
-            alert('copied')
-        } catch (error) {
-            alert('something went wrong')
-        }
-    }
+
+    // async function copy(content: any) {
+    //     try {
+    //         await navigator.clipboard.writeText(content)
+    //         alert('copied')
+    //     } catch (error) {
+    //         alert('something went wrong')
+    //     }
+    // }
     return (
         <div className="w-full h-full p-3">
             <ul className='list-disc list-inside space-y-1  overflow-auto'>

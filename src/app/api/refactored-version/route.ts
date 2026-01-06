@@ -34,7 +34,7 @@ Code:${code}`
         return Response.json({ 'refactored': response.text })
     }
     catch (err) {
-        console.log('Some API error')
-        return Response.json({ 'error': 'Refactored fail' }, { status: 500 })
+        console.log('Some API error: ',err)
+        return Response.json({ 'error': 'Gemini API Limit exceed' }, { status: 500 })
     }
 }

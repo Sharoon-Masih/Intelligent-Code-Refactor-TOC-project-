@@ -219,7 +219,7 @@ export function detectLongFn(code: string) {
 export function detectUnreachableCode(tokens: Token[]) {
     const issues: string[] = [];
 
-    let next: any;
+    let next: Token | null = null;
     tokens.forEach((tok, i) => {
         // Only care about return/throw/break/continue
         if (!["return", "throw", "break", "continue"].includes(tok.value)) return;
@@ -293,7 +293,6 @@ export function detectUnreachableCode(tokens: Token[]) {
         }
 
     });
-    console.log("next value: "+next?.value)
     if (next) {
         issues.push(`Unreachable code detected at line ${(next as Token).lineNumber}`);
     }
