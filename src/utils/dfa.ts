@@ -1,18 +1,21 @@
 import { Token } from "./tokenize";
 
-// input: "if", "}" (NFA)
+// input: "if", "}"
 export function detectNestedIfs(token: Token[]) {
     let nestingLevel = 0;
     const issues: string[] = [];
     token.forEach((tok) => {
         if (tok.value === "if") {
             nestingLevel++;
+            console.log('tok:',tok)
+            console.log('if nest-lvl: ',nestingLevel)
             if (nestingLevel > 2) {
                 issues.push(`Too much nesting detected at line ${tok.lineNumber}`)
             }
         }
         if (tok.value === "}") {
             nestingLevel = Math.max(0, nestingLevel - 1)
+            console.log('} nest lvl: ',nestingLevel)
         }
     })
     return issues
@@ -216,6 +219,7 @@ export function detectLongFn(code: string) {
 export function detectUnreachableCode(tokens: Token[]) {
     const issues: string[] = [];
 
+    let next: any;
     tokens.forEach((tok, i) => {
         // Only care about return/throw/break/continue
         if (!["return", "throw", "break", "continue"].includes(tok.value)) return;
@@ -228,20 +232,30 @@ export function detectUnreachableCode(tokens: Token[]) {
         ) {
             k++;
         }
-        console.log("k:", k)
+        console.log("k:", tokens[k])
         // 2) now scan *after* that line
         k++;
+        console.log("next k:", tokens[k])
+
+        // remove the previous "next" value
+        // if (!(k < tokens.length &&
+        //     tokens[k].lineNumber !== tok.lineNumber &&
+        //     tokens[k].value !== "}")) {
+        //     next = null
+        // }
+
         while (
             k < tokens.length &&
             tokens[k].lineNumber !== tok.lineNumber &&
             tokens[k].value !== "}"
         ) {
-            const next = tokens[k];
-            console.log("next", next)
-            console.log("next + 1: ", tokens[k + 1].value)
-            console.log(next.value === "/" &&
-                k + 1 < tokens.length &&
-                tokens[k + 1].value === "/")
+            next = tokens[k];
+            // console.log("next", next)
+            // console.log("next + 1: ", tokens[k + 1].value)
+            // console.log(next.value === "/" &&
+            //     k + 1 < tokens.length &&
+            //     tokens[k + 1].value === "/")
+            console.log('in block next:',next)
             // 3) comment‐block or comment‐line?
             if (
                 next.value === "/" &&
@@ -252,10 +266,12 @@ export function detectUnreachableCode(tokens: Token[]) {
                 const commentEnd = detectComment(tokens, k - 1);
                 if (commentEnd == null) {
                     // malformed comment: bail out to avoid infinite loop
+                    next=null
                     break;
                 }
                 k = commentEnd + 1;
                 console.log("k1:", k)
+                next=null;
                 continue;      // ✅ we moved k, so we “continue”
             }
 
@@ -263,18 +279,24 @@ export function detectUnreachableCode(tokens: Token[]) {
                 // skip past /**/ block
                 const commentEnd = detectComment(tokens, k - 1);
                 if (commentEnd == null) {
+                    next=null
                     break;
                 }
                 k = commentEnd + 1;
+                next=null
                 console.log("k2:", k)
                 continue;
             }
 
             // 4) anything else *on a different line* is unreachable
-            issues.push(`Unreachable code detected at line ${next.lineNumber}`);
             k++;            // ✅ advance k by 1 so the loop can make progress
         }
+
     });
+    console.log("next value: "+next?.value)
+    if (next) {
+        issues.push(`Unreachable code detected at line ${(next as Token).lineNumber}`);
+    }
 
     return issues;
 }

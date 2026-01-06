@@ -6,6 +6,7 @@ export async function POST(req: Request) {
     const { code } = body
     const token = tokenize(code);
     const rawIssues = [...detectNestedIfs(token), ...detectLongFn(code),...detectEmptyBlocks(token),...detectUnreachableCode(token),...detectUnusedVariables(token)]
+    
     if(rawIssues.length === 0 && token.length !== 0){ 
         return Response.json({ issues:rawIssues, token, message:"Your code is optimized ✅"})
     }

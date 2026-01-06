@@ -9,28 +9,48 @@ import { Issue } from "@/utils/dfa";
 interface analysisResponse {
   issues: Issue[],
   token: string[],
-  message:string
+  message: string
 }
+interface refactoredResponse {
+  refactored: string
+}
+
 export default function Home() {
   const [code, setCode] = useState("// Write your code here");
   const [clicked, setClicked] = useState(false);
   const [res, setRes] = useState<analysisResponse | undefined>()
+  const [refac, setRefac] = useState('')
 
   async function onClickHandler(code: string) {
-    const res = await fetch(`/api/analyze`, {
+    const analyzerRes = await fetch(`/api/analyze`, {
       method: "POST",
       body: JSON.stringify({ code }),
       headers: {
         "Content-Type": "application/json"
       }
     });
-    if (res) {
+    const data: analysisResponse = await analyzerRes.json()
+
+    const refactorRes = await fetch(`/api/refactored-version`, {
+      method: "POST",
+      body: JSON.stringify({ code, 'issues': data.issues }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    let refactorCode = await refactorRes.json()
+
+    if (analyzerRes && refactorRes) {
       setClicked(false)
     }
-    const data: analysisResponse = await res.json()
-    console.log(data.token)
-    return data
+
+    let response = {
+      data,
+      "refactored": refactorCode?.refactored ?? ''
+    }
+    return response
   }
+  console.log(refac)
   return (
     <main className="grid max-w-full w-full grid-cols-1 md:grid-cols-2 md:h-screen gap-2 bg-gradient-to-r from-red-600 via-purple-900 to-blue-800 p-5 overflow-hidden">
       <motion.div
@@ -52,7 +72,9 @@ export default function Home() {
             disabled={clicked}
             onClick={async () => {
               setClicked(true);
-              setRes(await onClickHandler(code));
+              const res = await onClickHandler(code)
+              setRes(res.data);
+              setRefac(res.refactored)
             }}
             className="relative inline-flex items-center justify-center px-6 py-2 overflow-hidden text-sm font-medium text-white bg-gradient-to-br from-purple-600 to-blue-500 rounded-xl hover:from-purple-700 hover:to-blue-600 focus:ring-2 focus:ring-blue-300 disabled:opacity-50"
           >
@@ -73,7 +95,7 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
           className="flex-grow bg-neutral-200 flex flex-col">
-          <ResultBox output={res?.issues} msg={res?.message}/>
+          <ResultBox output={res?.issues} msg={res?.message} refactorCode={refac} />
         </motion.div>
       </motion.div>
     </main>

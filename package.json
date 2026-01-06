@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/genai": "^1.25.0",
     "@monaco-editor/react": "^4.7.0",
     "framer-motion": "^12.12.2",
     "next": "15.1.8",
