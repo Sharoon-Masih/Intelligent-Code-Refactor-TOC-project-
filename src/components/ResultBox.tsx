@@ -1,5 +1,5 @@
 import { Issue } from '@/utils/dfa'
-import React, { useState } from 'react'
+import React from 'react'
 
 const ResultBox = ({ output, msg, refactorCode }: { output: Issue[] | undefined, msg?: string, refactorCode: string | undefined }) => {
 
